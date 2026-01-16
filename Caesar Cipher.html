@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher - Cipher Substitusi</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(253, 187, 45, 0.5);
+            background-color: #fff;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .key-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .key-input {
+            flex: 1;
+        }
+        
+        .key-slider {
+            flex: 2;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .encrypt-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .encrypt-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .decrypt-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .decrypt-btn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .clear-btn {
+            background-color: #9e9e9e;
+            color: white;
+        }
+        
+        .clear-btn:hover {
+            background-color: #757575;
+            transform: translateY(-2px);
+        }
+        
+        .result-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .copy-btn {
+            background-color: #2196F3;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .result-text {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 60px;
+            word-break: break-word;
+        }
+        
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .info-box h3 {
+            margin-bottom: 15px;
+            color: #fdbb2d;
+        }
+        
+        .info-box p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .key-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Caesar Cipher</h1>
+        
+        <div class="description">
+            <p>Caesar Cipher adalah salah satu teknik enkripsi tertua dan paling sederhana. Setiap huruf dalam teks digeser sejumlah posisi tertentu dalam alfabet berdasarkan kunci yang ditentukan.</p>
+        </div>
+        
+        <div class="input-group">
+            <label for="inputText">Teks yang akan diolah:</label>
+            <textarea id="inputText" placeholder="Masukkan teks yang ingin dienkripsi atau didekripsi..."></textarea>
+        </div>
+        
+        <div class="input-group">
+            <label for="key">Kunci (Shift):</label>
+            <div class="key-container">
+                <input type="number" id="key" class="key-input" min="1" max="25" value="3">
+                <input type="range" id="keySlider" class="key-slider" min="1" max="25" value="3">
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="mode">Mode:</label>
+            <select id="mode">
+                <option value="encrypt">Enkripsi</option>
+                <option value="decrypt">Dekripsi</option>
+            </select>
+        </div>
+        
+        <div class="buttons">
+            <button class="encrypt-btn" id="encryptBtn">Enkripsi</button>
+            <button class="decrypt-btn" id="decryptBtn">Dekripsi</button>
+            <button class="clear-btn" id="clearBtn">Hapus</button>
+        </div>
+        
+        <div class="result-container">
+            <div class="result-title">
+                <span>Hasil:</span>
+                <button class="copy-btn" id="copyBtn">Salin</button>
+            </div>
+            <div class="result-text" id="resultText">Hasil akan ditampilkan di sini...</div>
+        </div>
+        
+        <div class="info-box">
+            <h3>Tentang Caesar Cipher</h3>
+            <p>Caesar Cipher dinamai dari Julius Caesar, yang menggunakan teknik ini untuk komunikasi rahasia. Dalam cipher ini, setiap huruf dalam plaintext digantikan dengan huruf yang berada beberapa posisi setelahnya dalam alfabet.</p>
+            <p>Misalnya, dengan kunci 3:</p>
+            <p><strong>A → D, B → E, C → F, ..., X → A, Y → B, Z → C</strong></p>
+            <p>Untuk mendekripsi, cukup lakukan proses sebaliknya dengan kunci yang sama.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const keyInput = document.getElementById('key');
+            const keySlider = document.getElementById('keySlider');
+            const modeSelect = document.getElementById('mode');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultText = document.getElementById('resultText');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Sinkronisasi input key dan slider
+            keyInput.addEventListener('input', function() {
+                keySlider.value = keyInput.value;
+            });
+            
+            keySlider.addEventListener('input', function() {
+                keyInput.value = keySlider.value;
+            });
+            
+            // Fungsi Caesar Cipher
+            function caesarCipher(text, key, mode) {
+                let result = '';
+                const shift = mode === 'encrypt' ? parseInt(key) : (26 - parseInt(key)) % 26;
+                
+                for (let i = 0; i < text.length; i++) {
+                    let char = text[i];
+                    
+                    if (char.match(/[a-z]/i)) {
+                        const code = text.charCodeAt(i);
+                        
+                        if (code >= 65 && code <= 90) { // Huruf besar
+                            char = String.fromCharCode(((code - 65 + shift) % 26) + 65);
+                        } else if (code >= 97 && code <= 122) { // Huruf kecil
+                            char = String.fromCharCode(((code - 97 + shift) % 26) + 97);
+                        }
+                    }
+                    
+                    result += char;
+                }
+                
+                return result;
+            }
+            
+            // Fungsi untuk memproses teks
+            function processText() {
+                const text = inputText.value;
+                const key = keyInput.value;
+                const mode = modeSelect.value;
+                
+                if (!text.trim()) {
+                    resultText.textContent = 'Masukkan teks terlebih dahulu.';
+                    return;
+                }
+                
+                const result = caesarCipher(text, key, mode);
+                resultText.textContent = result;
+            }
+            
+            // Event listener untuk tombol enkripsi
+            encryptBtn.addEventListener('click', function() {
+                modeSelect.value = 'encrypt';
+                processText();
+            });
+            
+            // Event listener untuk tombol dekripsi
+            decryptBtn.addEventListener('click', function() {
+                modeSelect.value = 'decrypt';
+                processText();
+            });
+            
+            // Event listener untuk tombol hapus
+            clearBtn.addEventListener('click', function() {
+                inputText.value = '';
+                resultText.textContent = 'Hasil akan ditampilkan di sini...';
+            });
+            
+            // Event listener untuk tombol salin
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = resultText.textContent;
+                
+                if (textToCopy && textToCopy !== 'Hasil akan ditampilkan di sini...') {
+                    navigator.clipboard.writeText(textToCopy)
+                        .then(() => {
+                            const originalText = copyBtn.textContent;
+                            copyBtn.textContent = 'Tersalin!';
+                            setTimeout(() => {
+                                copyBtn.textContent = originalText;
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Gagal menyalin teks: ', err);
+                        });
+                }
+            });
+            
+            // Proses teks secara real-time saat mode atau kunci berubah
+            modeSelect.addEventListener('change', processText);
+            keyInput.addEventListener('change', processText);
+            keySlider.addEventListener('input', processText);
+        });
+    </script>
+</body>
+</html>
